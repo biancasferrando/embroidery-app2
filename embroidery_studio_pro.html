@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>StitchCraft Pro - Universal Embroidery Studio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        // Safely declare window.tailwind to prevent ReferenceError if CDN script is delayed or sandboxed
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fdf7f5',
+                            100: '#f9eee9',
+                            200: '#f1d8cd',
+                            500: '#d96b52',
+                            600: '#c2533a',
+                            700: '#a23f29',
+                        },
+                        sage: {
+                            50: '#f4f7f5',
+                            100: '#e5ebe7',
+                            500: '#52796f',
+                            600: '#3a5a40',
+                            700: '#2f4835',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        /* Custom scrollbars */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.3);
+            border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(156, 163, 175, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 antialiased h-full flex flex-col font-sans transition-colors duration-200 selection:bg-brand-500 selection:text-white">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar Navigation (Desktop & Laptop Viewports) -->
+        <aside class="hidden md:flex md:flex-col md:w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-20 shrink-0">
+            <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-500 text-white flex items-center justify-center shadow-md font-bold text-lg">
+                        <i data-lucide="needle" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-base text-gray-900 dark:text-white leading-tight">StitchCraft Pro</h1>
+                        <p class="text-[11px] font-medium text-sage-600 dark:text-sage-500">Embroidery Studio</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Bar Items -->
+            <nav class="flex-1 p-3 space-y-1 overflow-y-auto custom-scrollbar">
+                <button onclick="switchTab('projects')" id="nav-desk-projects" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all text-brand-600 bg-brand-50 dark:bg-brand-500/10 dark:text-brand-500">
+                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                    <span>Projects Board</span>
+                </button>
+
+                <button onclick="switchTab('threads')" id="nav-desk-threads" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i data-lucide="palette" class="w-4 h-4"></i>
+                    <span>Thread Stash</span>
+                </button>
+
+                <button onclick="switchTab('converter')" id="nav-desk-converter" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
+                    <span>DMC ↔ Cosmo Tool</span>
+                </button>
+
+                <button onclick="switchTab('fabrics')" id="nav-desk-fabrics" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i data-lucide="layers" class="w-4 h-4"></i>
+                    <span>Fabric Stash</span>
+                </button>
+
+                <button onclick="switchTab('equipment')" id="nav-desk-equipment" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i data-lucide="box" class="w-4 h-4"></i>
+                    <span>Equipment & Tools</span>
+                </button>
+
+                <button onclick="switchTab('shopping')" id="nav-desk-shopping" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                        <span>Shopping List</span>
+                    </div>
+                    <span id="badge-shopping-desk" class="hidden px-2 py-0.5 text-[10px] font-bold bg-brand-500 text-white rounded-full">0</span>
+                </button>
+            </nav>
+
+            <!-- Bottom Tools Bar -->
+            <div class="p-3 border-t border-gray-100 dark:border-gray-800 space-y-1">
+                <button onclick="openDataManagementModal()" class="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <i data-lucide="database" class="w-4 h-4"></i>
+                    <span>Backup & Sync JSON</span>
+                </button>
+                <button onclick="toggleTheme()" class="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <i id="desk-theme-icon" data-lucide="moon" class="w-4 h-4"></i>
+                    <span id="desk-theme-text">Dark Theme</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+            
+            <!-- Universal Top Header -->
+            <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 sm:px-8 py-3.5 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="md:hidden w-8 h-8 rounded-lg bg-brand-500 text-white flex items-center justify-center font-bold">
+                        <i data-lucide="needle" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h2 id="page-title" class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white leading-tight">Projects</h2>
+                        <p id="page-subtitle" class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">Track active works in progress and pattern schedules</p>
+                    </div>
+                </div>
+
+                <!-- Global Action & Search Controls -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="relative w-36 sm:w-64">
+                        <i data-lucide="search" class="w-3.5 h-3.5 sm:w-4 sm:h-4 absolute left-3 top-2.5 text-gray-400"></i>
+                        <input type="text" id="global-search" oninput="handleSearch(this.value)" placeholder="Search..." 
+                               class="w-full pl-8 sm:pl-9 pr-7 py-1.5 sm:py-2 bg-gray-100 dark:bg-gray-800 text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 text-gray-900 dark:text-white placeholder-gray-400">
+                        <button id="clear-search" onclick="clearSearch()" class="hidden absolute right-2 top-2 text-gray-400 hover:text-gray-600">
+                            <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+
+                    <button onclick="openAddModal()" class="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-xl shadow-sm transition active:scale-95 shrink-0">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline" id="add-btn-text">New Project</span>
+                    </button>
+
+                    <button onclick="toggleTheme()" class="md:hidden p-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                        <i id="mobile-theme-icon" data-lucide="moon" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dynamic View Container -->
+            <main id="main-content" class="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar bg-gray-50 dark:bg-gray-950">
+                <!-- Injected via JavaScript -->
+            </main>
+
+            <!-- Mobile Bottom Tab Bar -->
+            <nav class="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-2 py-2 flex justify-around items-center shrink-0 z-30">
+                <button onclick="switchTab('projects')" id="nav-mob-projects" class="flex flex-col items-center gap-1 text-brand-600 dark:text-brand-500">
+                    <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                    <span class="text-[9px] font-medium">Projects</span>
+                </button>
+                <button onclick="switchTab('threads')" id="nav-mob-threads" class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
+                    <i data-lucide="palette" class="w-5 h-5"></i>
+                    <span class="text-[9px] font-medium">Floss Stash</span>
+                </button>
+                <button onclick="switchTab('converter')" id="nav-mob-converter" class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
+                    <i data-lucide="arrow-left-right" class="w-5 h-5"></i>
+                    <span class="text-[9px] font-medium">Converter</span>
+                </button>
+                <button onclick="switchTab('fabrics')" id="nav-mob-fabrics" class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
+                    <i data-lucide="layers" class="w-5 h-5"></i>
+                    <span class="text-[9px] font-medium">Fabrics</span>
+                </button>
+                <button onclick="switchTab('equipment')" id="nav-mob-equipment" class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
+                    <i data-lucide="box" class="w-5 h-5"></i>
+                    <span class="text-[9px] font-medium">Tools</span>
+                </button>
+                <button onclick="switchTab('shopping')" id="nav-mob-shopping" class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 relative">
+                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                    <span class="text-[9px] font-medium">Shopping</span>
+                    <span id="badge-shopping-mob" class="hidden absolute top-0 right-2 w-2 h-2 bg-brand-500 rounded-full"></span>
+                </button>
+            </nav>
+        </div>
+
+    </div>
+
+    <!-- Universal Modal Container -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-black/60 z-50 hidden opacity-0 transition-opacity duration-200 flex items-center justify-center p-4">
+        <div id="modal-box" class="bg-white dark:bg-gray-900 w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-200 border border-gray-200 dark:border-gray-800 max-h-[90vh] flex flex-col">
+            <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center shrink-0">
+                <h3 id="modal-title" class="font-bold text-base sm:text-lg text-gray-900 dark:text-white">Modal Title</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="modal-body" class="p-6 overflow-y-auto custom-scrollbar flex-1">
+                <!-- Form / Details dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Toast Notification System -->
+    <div id="toast-container" class="fixed bottom-16 md:bottom-6 right-6 z-50 pointer-events-none flex flex-col gap-2"></div>
+
+    <script>
+        const THREAD_CATALOG = [
+            // DMC Threads Catalog
+            { brand: 'DMC', code: '310', name: 'Black', hex: '#000000', dmcEquiv: '310', cosmoEquiv: '600' },
+            { brand: 'DMC', code: 'B5200', name: 'Snow White', hex: '#FFFFFF', dmcEquiv: 'B5200', cosmoEquiv: '100' },
+            { brand: 'DMC', code: '666', name: 'Bright Red', hex: '#E31C23', dmcEquiv: '666', cosmoEquiv: '141' },
+            { brand: 'DMC', code: '725', name: 'Topaz Gold', hex: '#FFC72C', dmcEquiv: '725', cosmoEquiv: '235' },
+            { brand: 'DMC', code: '800', name: 'Pale Sky Blue', hex: '#C4D8E2', dmcEquiv: '800', cosmoEquiv: '412' },
+            { brand: 'DMC', code: '818', name: 'Baby Pink', hex: '#FFD1DC', dmcEquiv: '818', cosmoEquiv: '115' },
+            { brand: 'DMC', code: '899', name: 'Medium Rose', hex: '#E06D8A', dmcEquiv: '899', cosmoEquiv: '128' },
+            { brand: 'DMC', code: '934', name: 'Black Avocado Green', hex: '#31392A', dmcEquiv: '934', cosmoEquiv: '338' },
+            { brand: 'DMC', code: '939', name: 'Very Dark Navy Blue', hex: '#1B2431', dmcEquiv: '939', cosmoEquiv: '465' },
+            { brand: 'DMC', code: '3843', name: 'Electric Blue', hex: '#00A3E0', dmcEquiv: '3843', cosmoEquiv: '8005' },
+            { brand: 'DMC', code: '471', name: 'Very Light Avocado Green', hex: '#A8B979', dmcEquiv: '471', cosmoEquiv: '334' },
+            { brand: 'DMC', code: '550', name: 'Very Dark Violet', hex: '#581D53', dmcEquiv: '550', cosmoEquiv: '2280' },
+
+            // Cosmo (Lecien) Threads Catalog
+            { brand: 'Cosmo', code: '100', name: 'Snow White', hex: '#FFFFFF', dmcEquiv: 'B5200', cosmoEquiv: '100' },
+            { brand: 'Cosmo', code: '101', name: 'Soft Cream', hex: '#FFFDD0', dmcEquiv: '712', cosmoEquiv: '101' },
+            { brand: 'Cosmo', code: '115', name: 'Sakura Pink', hex: '#FFB7C5', dmcEquiv: '818', cosmoEquiv: '115' },
+            { brand: 'Cosmo', code: '128', name: 'Rose Petal', hex: '#E75480', dmcEquiv: '899', cosmoEquiv: '128' },
+            { brand: 'Cosmo', code: '141', name: 'Crimson Red', hex: '#C8102E', dmcEquiv: '666', cosmoEquiv: '141' },
+            { brand: 'Cosmo', code: '155', name: 'Deep Wine Burgundy', hex: '#58111A', dmcEquiv: '815', cosmoEquiv: '155' },
+            { brand: 'Cosmo', code: '202', name: 'Bright Lemon Yellow', hex: '#FFF44F', dmcEquiv: '445', cosmoEquiv: '202' },
+            { brand: 'Cosmo', code: '235', name: 'Marigold Orange', hex: '#FFA500', dmcEquiv: '741', cosmoEquiv: '235' },
+            { brand: 'Cosmo', code: '334', name: 'Moss Leaf Green', hex: '#A8B979', dmcEquiv: '471', cosmoEquiv: '334' },
+            { brand: 'Cosmo', code: '338', name: 'Forest Moss Green', hex: '#2D5A27', dmcEquiv: '934', cosmoEquiv: '338' },
+            { brand: 'Cosmo', code: '412', name: 'Soft Sky Blue', hex: '#87CEEB', dmcEquiv: '800', cosmoEquiv: '412' },
+            { brand: 'Cosmo', code: '465', name: 'Japanese Indigo', hex: '#1F2937', dmcEquiv: '939', cosmoEquiv: '465' },
+            { brand: 'Cosmo', code: '600', name: 'Jet Black', hex: '#000000', dmcEquiv: '310', cosmoEquiv: '600' },
+            { brand: 'Cosmo', code: '8001', name: 'Seasons Variegated Autumn', hex: '#D97706', dmcEquiv: '900', cosmoEquiv: '8001' },
+            { brand: 'Cosmo', code: '8005', name: 'Seasons Variegated Ocean', hex: '#0284C7', dmcEquiv: '3843', cosmoEquiv: '8005' }
+        ];
+
+        const DEFAULT_INITIAL_STATE = {
+            projects: [
+                {
+                    id: 'p1',
+                    title: 'Japanese Botanical Sakura Wreath',
+                    pattern: 'Cherry Blossom Meadow',
+                    designer: 'Lecien Crafts',
+                    status: 'In Progress',
+                    progress: 60,
+                    startDate: '2026-09-01',
+                    targetDate: '2026-11-20',
+                    hoopSize: '8" Wooden Hoop',
+                    fabric: '28ct Linen (Natural Raw)',
+                    notes: 'Using Cosmo Seasons variegated thread for smooth petal gradients.',
+                    threadsNeeded: [
+                        { brand: 'Cosmo', code: '115' },
+                        { brand: 'Cosmo', code: '128' },
+                        { brand: 'Cosmo', code: '600' },
+                        { brand: 'DMC', code: '310' }
+                    ]
+                },
+                {
+                    id: 'p2',
+                    title: 'Wildflower & Honeybee Sampler',
+                    pattern: 'Spring Floral Frame',
+                    designer: 'DMC Stitch Studio',
+                    status: 'Planned',
+                    progress: 0,
+                    startDate: '2026-10-10',
+                    targetDate: '2026-12-15',
+                    hoopSize: '7" Beechwood Hoop',
+                    fabric: '14ct Aida White',
+                    notes: 'Check greens in Cosmo stash before starting.',
+                    threadsNeeded: [
+                        { brand: 'DMC', code: '666' },
+                        { brand: 'DMC', code: '725' },
+                        { brand: 'Cosmo', code: '338' }
+                    ]
+                }
+            ],
+            threads: [
+                { id: 't1', brand: 'DMC', code: '310', name: 'Black', hex: '#000000', qty: 3, wishlist: false, dmcEquiv: '310', cosmoEquiv: '600' },
+                { id: 't2', brand: 'DMC', code: 'B5200', name: 'Snow White', hex: '#FFFFFF', qty: 2, wishlist: false, dmcEquiv: 'B5200', cosmoEquiv: '100' },
+                { id: 't3', brand: 'DMC', code: '666', name: 'Bright Red', hex: '#E31C23', qty: 1, wishlist: false, dmcEquiv: '666', cosmoEquiv: '141' },
+                { id: 't4', brand: 'Cosmo', code: '115', name: 'Sakura Pink', hex: '#FFB7C5', qty: 2, wishlist: false, dmcEquiv: '818', cosmoEquiv: '115' },
+                { id: 't5', brand: 'Cosmo', code: '128', name: 'Rose Petal', hex: '#E75480', qty: 0, wishlist: true, dmcEquiv: '899', cosmoEquiv: '128' },
+                { id: 't6', brand: 'Cosmo', code: '600', name: 'Jet Black', hex: '#000000', qty: 1, wishlist: false, dmcEquiv: '310', cosmoEquiv: '600' },
+                { id: 't7', brand: 'Cosmo', code: '338', name: 'Forest Moss Green', hex: '#2D5A27', qty: 0, wishlist: true, dmcEquiv: '934', cosmoEquiv: '338' }
+            ],
+            fabrics: [
+                { id: 'f1', type: 'Aida', count: '14ct', color: 'White', dimensions: '18" x 24"', yardage: '1 Cut' },
+                { id: 'f2', type: 'Linen', count: '28ct', color: 'Natural Raw', dimensions: '20" x 30"', yardage: '2 Cuts' },
+                { id: 'f3', type: 'Evenweave', count: '32ct', color: 'Antique Oatmeal', dimensions: '15" x 18"', yardage: '1 Cut' }
+            ],
+            equipment: [
+                { id: 'e1', category: 'Hoops', name: '7" Beechwood Hoop', type: 'Wooden Hoop', qty: 4 },
+                { id: 'e2', category: 'Hoops', name: '11" x 11" Q-Snap Frame', type: 'Q-Snap', qty: 1 },
+                { id: 'e3', category: 'Needles', name: 'Bohin Tapestry Needles', type: 'Size 24', qty: 2 },
+                { id: 'e4', category: 'Scissors', name: 'Gingher Stork Scissors', type: 'Embroidery Scissors', qty: 1 },
+                { id: 'e5', category: 'Stabilizer', name: 'Solvy Water Soluble Stabilizer', type: 'Wash-away', qty: 1 }
+            ]
+        };
+
+        let appState = JSON.parse(localStorage.getItem('stitchcraft_pro_app')) || DEFAULT_INITIAL_STATE;
+        let activeTab = 'projects';
+        let projectStatusFilter = 'All';
+        let threadBrandFilter = 'All';
+        let searchQuery = '';
+
+        // Safe helper for icon generation
+        function safeCreateIcons() {
+            if (typeof lucide !== 'undefined' && lucide && typeof lucide.createIcons === 'function') {
+                lucide.createIcons();
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('stitchcraft_pro_app', JSON.stringify(appState));
+            updateShoppingBadges();
+        }
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-xs font-semibold text-white transition-all transform translate-y-2 opacity-0 bg-gray-900 dark:bg-white dark:text-gray-900 border border-gray-700 dark:border-gray-200';
+            
+            toast.innerHTML = `
+                <i data-lucide="${type === 'success' ? 'check-circle-2' : 'alert-circle'}" class="w-4 h-4 ${type === 'success' ? 'text-emerald-400' : 'text-amber-400'}"></i>
+                <span>${msg}</span>
+            `;
+
+            container.appendChild(toast);
+            safeCreateIcons();
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 200);
+            }, 2500);
+        }
+
+        // Dark Mode Controller
+        function initTheme() {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            updateThemeIcons();
+        }
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+            updateThemeIcons();
+        }
+
+        function updateThemeIcons() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const deskIcon = document.getElementById('desk-theme-icon');
+            const deskText = document.getElementById('desk-theme-text');
+            const mobIcon = document.getElementById('mobile-theme-icon');
+
+            if (deskIcon) deskIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            if (deskText) deskText.textContent = isDark ? 'Light Theme' : 'Dark Theme';
+            if (mobIcon) mobIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            safeCreateIcons();
+        }
+
+        function handleSearch(val) {
+            searchQuery = val.toLowerCase().trim();
+            const clearBtn = document.getElementById('clear-search');
+            if (searchQuery) clearBtn.classList.remove('hidden');
+            else clearBtn.classList.add('hidden');
+            renderView();
+        }
+
+        function clearSearch() {
+            document.getElementById('global-search').value = '';
+            handleSearch('');
+        }
+
+        function updateShoppingBadges() {
+            const missingThreads = appState.threads.filter(t => t.wishlist || t.qty === 0).length;
+            const deskBadge = document.getElementById('badge-shopping-desk');
+            const mobBadge = document.getElementById('badge-shopping-mob');
+
+            if (missingThreads > 0) {
+                if (deskBadge) { deskBadge.textContent = missingThreads; deskBadge.classList.remove('hidden'); }
+                if (mobBadge) { mobBadge.classList.remove('hidden'); }
+            } else {
+                if (deskBadge) deskBadge.classList.add('hidden');
+                if (mobBadge) mobBadge.classList.add('hidden');
+            }
+        }
+
+        function switchTab(tab) {
+            activeTab = tab;
+            const pageTitle = document.getElementById('page-title');
+            const pageSubtitle = document.getElementById('page-subtitle');
+            const addBtnText = document.getElementById('add-btn-text');
+
+            const tabs = ['projects', 'threads', 'converter', 'fabrics', 'equipment', 'shopping'];
+            tabs.forEach(t => {
+                const deskBtn = document.getElementById(`nav-desk-${t}`);
+                const mobBtn = document.getElementById(`nav-mob-${t}`);
+
+                if (t === tab) {
+                    if (deskBtn) deskBtn.className = 'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all text-brand-600 bg-brand-50 dark:bg-brand-500/10 dark:text-brand-500 font-semibold';
+                    if (mobBtn) mobBtn.className = 'flex flex-col items-center gap-1 text-brand-600 dark:text-brand-500 font-semibold';
+                } else {
+                    if (deskBtn) deskBtn.className = 'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800';
+                    if (mobBtn) mobBtn.className = 'flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500';
+                }
+            });
+
+            if (tab === 'projects') {
+                pageTitle.textContent = 'Projects Board';
+                pageSubtitle.textContent = 'Track active works in progress, stitch timelines, and completion status';
+                if (addBtnText) addBtnText.textContent = 'New Project';
+            } else if (tab === 'threads') {
+                pageTitle.textContent = 'Thread Stash';
+                pageSubtitle.textContent = 'DMC and Cosmo (Lecien) cotton skein counts and inventory';
+                if (addBtnText) addBtnText.textContent = 'Add Thread';
+            } else if (tab === 'converter') {
+                pageTitle.textContent = 'DMC ↔ Cosmo Converter';
+                pageSubtitle.textContent = 'Cross-reference thread numbers and color equivalents';
+                if (addBtnText) addBtnText.textContent = 'Add Thread';
+            } else if (tab === 'fabrics') {
+                pageTitle.textContent = 'Fabric Inventory';
+                pageSubtitle.textContent = 'Aida, Linen, and Evenweave cuts, counts, and dimensions';
+                if (addBtnText) addBtnText.textContent = 'Add Fabric';
+            } else if (tab === 'equipment') {
+                pageTitle.textContent = 'Tools & Equipment';
+                pageSubtitle.textContent = 'Hoops, Q-Snaps, needles, scissors, and storage organizers';
+                if (addBtnText) addBtnText.textContent = 'Add Tool';
+            } else if (tab === 'shopping') {
+                pageTitle.textContent = 'Shopping & Restock List';
+                pageSubtitle.textContent = 'Compiled thread wishlist and project restock items';
+                if (addBtnText) addBtnText.textContent = 'Add Thread';
+            }
+
+            renderView();
+        }
+
+        function renderView() {
+            const main = document.getElementById('main-content');
+            main.innerHTML = '';
+
+            if (activeTab === 'projects') renderProjectsView(main);
+            else if (activeTab === 'threads') renderThreadsView(main);
+            else if (activeTab === 'converter') renderConverterView(main);
+            else if (activeTab === 'fabrics') renderFabricsView(main);
+            else if (activeTab === 'equipment') renderEquipmentView(main);
+            else if (activeTab === 'shopping') renderShoppingView(main);
+
+            safeCreateIcons();
+            updateShoppingBadges();
+        }
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-xs font-semibold text-white transition-all transform translate-y-2 opacity-0 bg-gray-900 dark:bg-white dark:text-gray-900 border border-gray-700 dark:border-gray-200';
+            
+            toast.innerHTML = `
+                <i data-lucide="${type === 'success' ? 'check-circle-2' : 'alert-circle'}" class="w-4 h-4 ${type === 'success' ? 'text-emerald-400' : 'text-amber-400'}"></i>
+                <span>${msg}</span>
+            `;
+
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 200);
+            }, 2500);
+        }
+
+        // Dark Mode Controller
+        function initTheme() {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            updateThemeIcons();
+        }
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+            updateThemeIcons();
+        }
+
+        function updateThemeIcons() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const deskIcon = document.getElementById('desk-theme-icon');
+            const deskText = document.getElementById('desk-theme-text');
+            const mobIcon = document.getElementById('mobile-theme-icon');
+
+            if (deskIcon) deskIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            if (deskText) deskText.textContent = isDark ? 'Light Theme' : 'Dark Theme';
+            if (mobIcon) mobIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            lucide.createIcons();
+        }
+
+        function handleSearch(val) {
+            searchQuery = val.toLowerCase().trim();
+            const clearBtn = document.getElementById('clear-search');
+            if (searchQuery) clearBtn.classList.remove('hidden');
+            else clearBtn.classList.add('hidden');
+            renderView();
+        }
+
+        function clearSearch() {
+            document.getElementById('global-search').value = '';
+            handleSearch('');
+        }
+
+        function updateShoppingBadges() {
+            const missingThreads = appState.threads.filter(t => t.wishlist || t.qty === 0).length;
+            const deskBadge = document.getElementById('badge-shopping-desk');
+            const mobBadge = document.getElementById('badge-shopping-mob');
+
+            if (missingThreads > 0) {
+                if (deskBadge) { deskBadge.textContent = missingThreads; deskBadge.classList.remove('hidden'); }
+                if (mobBadge) { mobBadge.classList.remove('hidden'); }
+            } else {
+                if (deskBadge) deskBadge.classList.add('hidden');
+                if (mobBadge) mobBadge.classList.add('hidden');
+            }
+        }
+
+        function switchTab(tab) {
+            activeTab = tab;
+            const pageTitle = document.getElementById('page-title');
+            const pageSubtitle = document.getElementById('page-subtitle');
+            const addBtnText = document.getElementById('add-btn-text');
+
+            const tabs = ['projects', 'threads', 'converter', 'fabrics', 'equipment', 'shopping'];
+            tabs.forEach(t => {
+                const deskBtn = document.getElementById(`nav-desk-${t}`);
+                const mobBtn = document.getElementById(`nav-mob-${t}`);
+
+                if (t === tab) {
+                    if (deskBtn) deskBtn.className = 'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all text-brand-600 bg-brand-50 dark:bg-brand-500/10 dark:text-brand-500 font-semibold';
+                    if (mobBtn) mobBtn.className = 'flex flex-col items-center gap-1 text-brand-600 dark:text-brand-500 font-semibold';
+                } else {
+                    if (deskBtn) deskBtn.className = 'w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800';
+                    if (mobBtn) mobBtn.className = 'flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500';
+                }
+            });
+
+            if (tab === 'projects') {
+                pageTitle.textContent = 'Projects Board';
+                pageSubtitle.textContent = 'Track active works in progress, stitch timelines, and completion status';
+                if (addBtnText) addBtnText.textContent = 'New Project';
+            } else if (tab === 'threads') {
+                pageTitle.textContent = 'Thread Stash';
+                pageSubtitle.textContent = 'DMC and Cosmo (Lecien) cotton skein counts and inventory';
+                if (addBtnText) addBtnText.textContent = 'Add Thread';
+            } else if (tab === 'converter') {
+                pageTitle.textContent = 'DMC ↔ Cosmo Converter';
+                pageSubtitle.textContent = 'Cross-reference thread numbers and color equivalents';
+                if (addBtnText) addBtnText.textContent = 'Add Thread';
+            } else if (tab === 'fabrics') {
+                pageTitle.textContent = 'Fabric Inventory';
+                pageSubtitle.textContent = 'Aida, Linen, and Evenweave cuts, counts, and dimensions';
+                if (addBtnText) addBtnText.textContent = 'Add Fabric';
+            } else if (tab === 'equipment') {
+                pageTitle.textContent = 'Tools & Equipment';
+                pageSubtitle.textContent = 'Hoops, Q-Snaps, needles, scissors, and storage organizers';
+                if (addBtnText) addBtnText.textContent = 'Add Tool';
+            } else if (tab === 'shopping') {
+                pageTitle.textContent = 'Shopping & Restock List';
+                pageSubtitle.textContent = 'Compiled thread wishlist and project restock items';
+                if (addBtnText) addBtnText.textContent = 'Add Thread';
+            }
+
+            renderView();
+        }
+
+        function renderView() {
+            const main = document.getElementById('main-content');
+            main.innerHTML = '';
+
+            if (activeTab === 'projects') renderProjectsView(main);
+            else if (activeTab === 'threads') renderThreadsView(main);
+            else if (activeTab === 'converter') renderConverterView(main);
+            else if (activeTab === 'fabrics') renderFabricsView(main);
+            else if (activeTab === 'equipment') renderEquipmentView(main);
+            else if (activeTab === 'shopping') renderShoppingView(main);
+
+            lucide.createIcons();
+            updateShoppingBadges();
+        }
+
+        function renderProjectsView(container) {
+            const controls = document.createElement('div');
+            controls.className = 'flex flex-wrap items-center justify-between gap-4 mb-6';
+            controls.innerHTML = `
+                <div class="flex items-center gap-1 bg-white dark:bg-gray-900 p-1 rounded-xl border border-gray-200 dark:border-gray-800 text-xs font-medium">
+                    ${['All', 'In Progress', 'Planned', 'Completed', 'On Hold'].map(f => `
+                        <button onclick="projectStatusFilter='${f}'; renderView()" class="px-3 py-1.5 rounded-lg transition ${projectStatusFilter === f ? 'bg-brand-500 text-white font-semibold' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}">${f}</button>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(controls);
+
+            let projects = appState.projects;
+            if (projectStatusFilter !== 'All') {
+                projects = projects.filter(p => p.status === projectStatusFilter);
+            }
+            if (searchQuery) {
+                projects = projects.filter(p => p.title.toLowerCase().includes(searchQuery) || p.pattern.toLowerCase().includes(searchQuery));
+            }
+
+            if (projects.length === 0) {
+                container.appendChild(createEmptyState('No embroidery projects found', 'Click "New Project" to start tracking a new pattern.'));
+                return;
+            }
+
+            const grid = document.createElement('div');
+            grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5';
+
+            projects.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition cursor-pointer flex flex-col justify-between';
+                card.onclick = () => openProjectModal(p.id);
+
+                const statusColors = {
+                    'In Progress': 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400',
+                    'Planned': 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400',
+                    'Completed': 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400',
+                    'On Hold': 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+                };
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-3">
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${statusColors[p.status]} uppercase tracking-wider">${p.status}</span>
+                            <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">${p.targetDate || 'No date'}</span>
+                        </div>
+                        <h3 class="font-bold text-base text-gray-900 dark:text-white leading-snug mb-1">${p.title}</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">${p.pattern} • ${p.designer}</p>
+                    </div>
+
+                    <div>
+                        <div class="space-y-1.5 mb-4">
+                            <div class="flex justify-between text-xs font-medium text-gray-600 dark:text-gray-300">
+                                <span>Completion Progress</span>
+                                <span class="font-bold text-gray-900 dark:text-white">${p.progress}%</span>
+                            </div>
+                            <div class="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-brand-500 rounded-full transition-all duration-300" style="width: ${p.progress}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-gray-100 dark:border-gray-800 grid grid-cols-2 gap-2 text-xs text-gray-500 dark:text-gray-400">
+                            <div class="flex items-center gap-1.5 truncate">
+                                <i data-lucide="circle-dot" class="w-3.5 h-3.5 text-brand-500"></i>
+                                <span class="truncate">${p.hoopSize}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5 truncate">
+                                <i data-lucide="layers" class="w-3.5 h-3.5 text-sage-500"></i>
+                                <span class="truncate">${p.fabric}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            container.appendChild(grid);
+        }
+
+        function renderThreadsView(container) {
+            const controls = document.createElement('div');
+            controls.className = 'flex flex-wrap items-center justify-between gap-4 mb-6';
+            controls.innerHTML = `
+                <div class="flex items-center gap-1 bg-white dark:bg-gray-900 p-1 rounded-xl border border-gray-200 dark:border-gray-800 text-xs font-medium">
+                    ${['All', 'DMC', 'Cosmo', 'Wishlist'].map(b => `
+                        <button onclick="threadBrandFilter='${b}'; renderView()" class="px-3 py-1.5 rounded-lg transition ${threadBrandFilter === b ? 'bg-brand-500 text-white font-semibold' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}">${b === 'Cosmo' ? 'Cosmo (Lecien)' : b}</button>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(controls);
+
+            let threads = appState.threads;
+            if (threadBrandFilter === 'Wishlist') {
+                threads = threads.filter(t => t.wishlist || t.qty === 0);
+            } else if (threadBrandFilter !== 'All') {
+                threads = threads.filter(t => t.brand === threadBrandFilter);
+            }
+
+            if (searchQuery) {
+                threads = threads.filter(t => t.code.toLowerCase().includes(searchQuery) || t.name.toLowerCase().includes(searchQuery) || t.brand.toLowerCase().includes(searchQuery));
+            }
+
+            if (threads.length === 0) {
+                container.appendChild(createEmptyState('No thread skeins in filter', 'Add new DMC or Cosmo threads to build your inventory.'));
+                return;
+            }
+
+            const grid = document.createElement('div');
+            grid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4';
+
+            threads.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex items-center justify-between';
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl shadow-inner border border-black/10 flex items-center justify-center shrink-0" style="background-color: ${t.hex}">
+                            ${t.qty === 0 ? '<span class="text-[9px] bg-red-500 text-white font-bold px-1 rounded">0</span>' : ''}
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <h4 class="font-bold text-sm text-gray-900 dark:text-white">${t.brand} ${t.code}</h4>
+                                ${t.brand === 'Cosmo' ? '<span class="text-[9px] font-bold bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400 px-1.5 py-0.2 rounded">Lecien</span>' : ''}
+                            </div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[120px]">${t.name}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <div class="flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl p-0.5 border border-gray-200 dark:border-gray-700">
+                            <button onclick="updateThreadQty('${t.id}', -1)" class="w-7 h-7 flex items-center justify-center font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg active:scale-95 transition">-</button>
+                            <span class="w-6 text-center text-xs font-bold text-gray-900 dark:text-white">${t.qty}</span>
+                            <button onclick="updateThreadQty('${t.id}', 1)" class="w-7 h-7 flex items-center justify-center font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg active:scale-95 transition">+</button>
+                        </div>
+
+                        <button onclick="toggleWishlist('${t.id}')" class="p-2 rounded-xl text-gray-400 hover:text-amber-500 transition">
+                            <i data-lucide="bookmark" class="w-4 h-4 ${t.wishlist ? 'text-amber-500 fill-amber-500' : ''}"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            container.appendChild(grid);
+        }
+
+        function renderConverterView(container) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'max-w-3xl mx-auto space-y-6';
+
+            wrapper.innerHTML = `
+                <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
+                    <h3 class="font-bold text-lg text-gray-900 dark:text-white mb-1">DMC ↔ Cosmo Converter Tool</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">Lookup equivalent thread color codes across DMC and Cosmo (Lecien) lines.</p>
+
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3 text-gray-400"></i>
+                        <input type="text" id="converter-input" oninput="filterConverterResults(this.value)" placeholder="Type thread number e.g., 310, 600, B5200, 115..." class="w-full pl-10 pr-4 py-2.5 bg-gray-100 dark:bg-gray-800 text-sm rounded-xl border-0 focus:ring-2 focus:ring-brand-500 text-gray-900 dark:text-white">
+                    </div>
+                </div>
+
+                <div id="converter-results-grid" class="space-y-3">
+                    ${renderConverterItems('')}
+                </div>
+            `;
+
+            container.appendChild(wrapper);
+        }
+
+        function renderConverterItems(query) {
+            const q = query.toLowerCase().trim();
+            const results = THREAD_CATALOG.filter(item => 
+                !q || item.code.toLowerCase().includes(q) || item.name.toLowerCase().includes(q) || item.dmcEquiv.toLowerCase().includes(q) || item.cosmoEquiv.toLowerCase().includes(q)
+            );
+
+            if (results.length === 0) {
+                return `<div class="p-8 text-center text-gray-400 text-xs bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800">No matching DMC or Cosmo thread shade found in database.</div>`;
+            }
+
+            return results.map(item => `
+                <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl shadow-inner border border-black/10 shrink-0" style="background-color: ${item.hex}"></div>
+                        <div>
+                            <p class="font-bold text-sm text-gray-900 dark:text-white">${item.brand} ${item.code} - ${item.name}</p>
+                            <p class="text-xs text-brand-600 dark:text-brand-500 font-medium">
+                                Equivalent: ${item.brand === 'DMC' ? `Cosmo #${item.cosmoEquiv}` : `DMC #${item.dmcEquiv}`}
+                            </p>
+                        </div>
+                    </div>
+                    <button onclick="addCatalogThreadToStash('${item.brand}', '${item.code}', '${item.name}', '${item.hex}', '${item.dmcEquiv}', '${item.cosmoEquiv}')" class="px-3.5 py-1.5 bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-500 rounded-xl text-xs font-bold hover:bg-brand-100 transition active:scale-95">
+                        + Add to Stash
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function filterConverterResults(val) {
+            document.getElementById('converter-results-grid').innerHTML = renderConverterItems(val);
+            safeCreateIcons();
+        }
+
+        function renderFabricsView(container) {
+            const grid = document.createElement('div');
+            grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
+
+            if (appState.fabrics.length === 0) {
+                container.appendChild(createEmptyState('No fabrics in inventory', 'Click "Add Fabric" to catalog Aida, Linen, or Evenweave cuts.'));
+                return;
+            }
+
+            appState.fabrics.forEach(f => {
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex items-center justify-between';
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-sage-500/15 text-sage-600 dark:text-sage-400 font-bold flex items-center justify-center shrink-0 text-xs">
+                            ${f.count}
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-900 dark:text-white">${f.type} • ${f.color}</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${f.dimensions} (${f.yardage})</p>
+                        </div>
+                    </div>
+                    <button onclick="deleteFabric('${f.id}')" class="text-gray-400 hover:text-red-500 transition p-2">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+
+            container.appendChild(grid);
+        }
+
+        function renderEquipmentView(container) {
+            const grid = document.createElement('div');
+            grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
+
+            if (appState.equipment.length === 0) {
+                container.appendChild(createEmptyState('No tools or hoops logged', 'Add your embroidery hoops, needles, and scissors.'));
+                return;
+            }
+
+            appState.equipment.forEach(e => {
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex items-center justify-between';
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center shrink-0">
+                            <i data-lucide="box" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-900 dark:text-white">${e.name}</h4>
+                            <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">${e.category} • ${e.type}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-700 dark:text-gray-300">x${e.qty}</span>
+                        <button onclick="deleteEquipment('${e.id}')" class="text-gray-400 hover:text-red-500 transition p-1">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            container.appendChild(grid);
+        }
+
+        function renderShoppingView(container) {
+            const neededThreads = appState.threads.filter(t => t.wishlist || t.qty === 0);
+
+            if (neededThreads.length === 0) {
+                container.appendChild(createEmptyState('Shopping list is clear!', 'Bookmark missing threads or assign project materials to auto-fill this list.'));
+                return;
+            }
+
+            const header = document.createElement('div');
+            header.className = 'bg-brand-500 text-white p-6 rounded-2xl shadow-sm mb-6 flex items-center justify-between';
+            header.innerHTML = `
+                <div>
+                    <p class="text-xs font-medium text-white/80 uppercase tracking-wider">Required Restock</p>
+                    <h3 class="text-xl font-bold">${neededThreads.length} Thread Skeins Needed</h3>
+                </div>
+                <i data-lucide="shopping-cart" class="w-8 h-8 text-white/80"></i>
+            `;
+            container.appendChild(header);
+
+            const grid = document.createElement('div');
+            grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3';
+
+            neededThreads.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex items-center justify-between';
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl border border-black/10 shrink-0" style="background-color: ${t.hex}"></div>
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-900 dark:text-white">${t.brand} ${t.code}</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${t.name}</p>
+                        </div>
+                    </div>
+                    <button onclick="markPurchased('${t.id}')" class="flex items-center gap-1.5 text-xs bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-3 py-1.5 rounded-xl transition active:scale-95">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i> Restocked
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+
+            container.appendChild(grid);
+        }
+
+        function createEmptyState(title, subtitle) {
+            const div = document.createElement('div');
+            div.className = 'text-center py-20 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8';
+            div.innerHTML = `
+                <i data-lucide="sparkles" class="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3"></i>
+                <h3 class="font-bold text-base text-gray-900 dark:text-white mb-1">${title}</h3>
+                <p class="text-xs text-gray-500 max-w-sm mx-auto">${subtitle}</p>
+            `;
+            return div;
+        }
+
+        function updateThreadQty(id, delta) {
+            const thread = appState.threads.find(t => t.id === id);
+            if (thread) {
+                thread.qty = Math.max(0, thread.qty + delta);
+                saveState();
+                renderView();
+            }
+        }
+
+        function toggleWishlist(id) {
+            const thread = appState.threads.find(t => t.id === id);
+            if (thread) {
+                thread.wishlist = !thread.wishlist;
+                saveState();
+                renderView();
+                showToast(thread.wishlist ? 'Added to Wishlist' : 'Removed from Wishlist');
+            }
+        }
+
+        function markPurchased(id) {
+            const thread = appState.threads.find(t => t.id === id);
+            if (thread) {
+                thread.qty += 1;
+                thread.wishlist = false;
+                saveState();
+                renderView();
+                showToast(`Restocked ${thread.brand} ${thread.code}!`);
+            }
+        }
+
+        function addCatalogThreadToStash(brand, code, name, hex, dmcEquiv, cosmoEquiv) {
+            const exists = appState.threads.find(t => t.brand === brand && t.code === code);
+            if (exists) {
+                exists.qty += 1;
+            } else {
+                appState.threads.unshift({
+                    id: 't_' + Date.now(),
+                    brand, code, name, hex,
+                    qty: 1, wishlist: false,
+                    dmcEquiv, cosmoEquiv
+                });
+            }
+            saveState();
+            showToast(`${brand} ${code} added to Stash!`);
+        }
+
+        function deleteFabric(id) {
+            appState.fabrics = appState.fabrics.filter(f => f.id !== id);
+            saveState();
+            renderView();
+            showToast('Fabric entry deleted');
+        }
+
+        function deleteEquipment(id) {
+            appState.equipment = appState.equipment.filter(e => e.id !== id);
+            saveState();
+            renderView();
+            showToast('Equipment entry deleted');
+        }
+
+        function openAddModal() {
+            const backdrop = document.getElementById('modal-backdrop');
+            const box = document.getElementById('modal-box');
+            const title = document.getElementById('modal-title');
+            const body = document.getElementById('modal-body');
+
+            if (activeTab === 'projects') {
+                title.textContent = 'Create New Embroidery Project';
+                body.innerHTML = `
+                    <form onsubmit="saveNewProject(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Project Title</label>
+                            <input type="text" id="m-p-title" required placeholder="e.g. Cherry Blossom Wreath" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Pattern Name</label>
+                                <input type="text" id="m-p-pattern" placeholder="Pattern" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Designer</label>
+                                <input type="text" id="m-p-designer" placeholder="Designer" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Hoop Size</label>
+                                <input type="text" id="m-p-hoop" placeholder="e.g. 7 inch Hoop" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Fabric Spec</label>
+                                <input type="text" id="m-p-fabric" placeholder="e.g. 14ct Aida White" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 rounded-xl text-xs transition">Save Project</button>
+                    </form>
+                `;
+            } else if (activeTab === 'fabrics') {
+                title.textContent = 'Add Fabric Cut';
+                body.innerHTML = `
+                    <form onsubmit="saveNewFabric(event)" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Type</label>
+                                <select id="m-f-type" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                                    <option value="Aida">Aida</option>
+                                    <option value="Linen">Linen</option>
+                                    <option value="Evenweave">Evenweave</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Count</label>
+                                <input type="text" id="m-f-count" required placeholder="14ct" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Fabric Color</label>
+                            <input type="text" id="m-f-color" required placeholder="Natural Oatmeal / Raw" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Dimensions</label>
+                                <input type="text" id="m-f-dim" placeholder="18x24 inches" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Cut Count</label>
+                                <input type="text" id="m-f-yardage" placeholder="1 Cut" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 rounded-xl text-xs transition">Add Fabric</button>
+                    </form>
+                `;
+            } else if (activeTab === 'equipment') {
+                title.textContent = 'Add Tool / Equipment';
+                body.innerHTML = `
+                    <form onsubmit="saveNewEquipment(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Tool Name</label>
+                            <input type="text" id="m-e-name" required placeholder="e.g. 7 inch Beechwood Hoop" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Category</label>
+                                <select id="m-e-cat" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                                    <option value="Hoops">Hoops & Frames</option>
+                                    <option value="Needles">Needles</option>
+                                    <option value="Scissors">Scissors</option>
+                                    <option value="Stabilizer">Stabilizers</option>
+                                    <option value="Storage">Storage</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Sub-Type</label>
+                                <input type="text" id="m-e-type" placeholder="e.g. Wooden Hoop" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Quantity</label>
+                            <input type="number" id="m-e-qty" value="1" min="1" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                        </div>
+                        <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 rounded-xl text-xs transition">Add Tool</button>
+                    </form>
+                `;
+            } else {
+                title.textContent = 'Add Thread Skein';
+                body.innerHTML = `
+                    <form onsubmit="saveNewThread(event)" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Brand</label>
+                                <select id="m-t-brand" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                                    <option value="Cosmo">Cosmo (Lecien)</option>
+                                    <option value="DMC">DMC</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Code Number</label>
+                                <input type="text" id="m-t-code" required placeholder="310 or 600" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Shade Name</label>
+                            <input type="text" id="m-t-name" required placeholder="Jet Black" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Color Swatch</label>
+                                <input type="color" id="m-t-hex" value="#D96B52" class="w-full h-10 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl cursor-pointer">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Initial Qty</label>
+                                <input type="number" id="m-t-qty" value="1" min="0" class="w-full p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs border-0 text-gray-900 dark:text-white">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 rounded-xl text-xs transition">Add Thread</button>
+                    </form>
+                `;
+            }
+
+            backdrop.classList.remove('hidden');
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function openProjectModal(id) {
+            const p = appState.projects.find(proj => proj.id === id);
+            if (!p) return;
+
+            const backdrop = document.getElementById('modal-backdrop');
+            const box = document.getElementById('modal-box');
+            const title = document.getElementById('modal-title');
+            const body = document.getElementById('modal-body');
+
+            title.textContent = p.title;
+
+            body.innerHTML = `
+                <div class="space-y-5">
+                    <div>
+                        <p class="text-xs text-gray-500">${p.pattern} • ${p.designer}</p>
+                    </div>
+
+                    <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-xl">
+                        <div class="flex justify-between text-xs font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                            <span>Project Progress Slider</span>
+                            <span id="p-modal-val">${p.progress}%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="${p.progress}" oninput="updateProjectProgress('${p.id}', this.value)" class="w-full accent-brand-500">
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Required Threads Checklist</h4>
+                        <div class="space-y-2">
+                            ${p.threadsNeeded.map(req => {
+                                const matched = appState.threads.find(t => t.brand === req.brand && t.code === req.code);
+                                const inStock = matched && matched.qty > 0;
+                                return `
+                                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-xs">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-4 h-4 rounded-full border border-black/10" style="background-color: ${matched ? matched.hex : '#ccc'}"></div>
+                                            <span class="font-bold text-gray-900 dark:text-white">${req.brand} ${req.code}</span>
+                                        </div>
+                                        <span class="${inStock ? 'text-emerald-500 font-semibold' : 'text-amber-500 font-semibold'}">
+                                            ${inStock ? 'In Stock' : 'Missing'}
+                                        </span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <button onclick="deleteProject('${p.id}')" class="flex-1 bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 font-bold py-2.5 rounded-xl text-xs transition">Delete Project</button>
+                        <button onclick="closeModal()" class="flex-1 bg-brand-500 text-white font-bold py-2.5 rounded-xl text-xs transition">Done</button>
+                    </div>
+                </div>
+            `;
+
+            backdrop.classList.remove('hidden');
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function openDataManagementModal() {
+            const backdrop = document.getElementById('modal-backdrop');
+            const box = document.getElementById('modal-box');
+            const title = document.getElementById('modal-title');
+            const body = document.getElementById('modal-body');
+
+            title.textContent = 'Data Backup & JSON Sync';
+
+            body.innerHTML = `
+                <div class="space-y-4 text-xs">
+                    <p class="text-gray-500 dark:text-gray-400">Export your complete thread inventory and project records to a JSON file, or restore data from an existing backup.</p>
+                    
+                    <button onclick="exportDataJSON()" class="w-full flex items-center justify-center gap-2 bg-brand-500 text-white font-bold py-3 rounded-xl transition">
+                        <i data-lucide="download" class="w-4 h-4"></i> Export Backup JSON
+                    </button>
+
+                    <div class="border-t border-gray-100 dark:border-gray-800 pt-4">
+                        <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Import JSON File</label>
+                        <input type="file" id="import-json-file" accept=".json" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-600 dark:file:bg-brand-500/10 dark:file:text-brand-500">
+                        <button onclick="importDataJSON()" class="w-full mt-3 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-bold py-2.5 rounded-xl transition">Import & Restore</button>
+                    </div>
+                </div>
+            `;
+
+            safeCreateIcons();
+            backdrop.classList.remove('hidden');
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeModal() {
+            const backdrop = document.getElementById('modal-backdrop');
+            const box = document.getElementById('modal-box');
+
+            backdrop.classList.add('opacity-0');
+            box.classList.add('scale-95');
+            setTimeout(() => {
+                backdrop.classList.add('hidden');
+            }, 200);
+        }
+
+        function exportDataJSON() {
+            const jsonStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", jsonStr);
+            dlAnchor.setAttribute("download", `stitchcraft_backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+            showToast('Data exported successfully!');
+        }
+
+        function importDataJSON() {
+            const fileInput = document.getElementById('import-json-file');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                showToast('Please select a JSON backup file first', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed.projects && parsed.threads) {
+                        appState = parsed;
+                        saveState();
+                        closeModal();
+                        renderView();
+                        showToast('Backup restored successfully!');
+                    } else {
+                        showToast('Invalid backup file structure', 'error');
+                    }
+                } catch(err) {
+                    showToast('Failed to parse backup JSON', 'error');
+                }
+            };
+            reader.readAsText(fileInput.files[0]);
+        }
+
+        function saveNewProject(e) {
+            e.preventDefault();
+            const title = document.getElementById('m-p-title').value;
+            const pattern = document.getElementById('m-p-pattern').value || 'Pattern';
+            const designer = document.getElementById('m-p-designer').value || 'Self';
+            const hoopSize = document.getElementById('m-p-hoop').value || '7" Hoop';
+            const fabric = document.getElementById('m-p-fabric').value || '14ct Aida';
+
+            appState.projects.unshift({
+                id: 'p_' + Date.now(),
+                title, pattern, designer,
+                status: 'Planned', progress: 0,
+                startDate: new Date().toISOString().slice(0,10),
+                targetDate: '2026-12-31',
+                hoopSize, fabric, notes: '', threadsNeeded: []
+            });
+
+            saveState();
+            closeModal();
+            renderView();
+            showToast('Project created!');
+        }
+
+        function saveNewFabric(e) {
+            e.preventDefault();
+            const type = document.getElementById('m-f-type').value;
+            const count = document.getElementById('m-f-count').value;
+            const color = document.getElementById('m-f-color').value;
+            const dimensions = document.getElementById('m-f-dim').value || '18x24"';
+            const yardage = document.getElementById('m-f-yardage').value || '1 Cut';
+
+            appState.fabrics.unshift({
+                id: 'f_' + Date.now(),
+                type, count, color, dimensions, yardage
+            });
+
+            saveState();
+            closeModal();
+            renderView();
+            showToast('Fabric added!');
+        }
+
+        function saveNewEquipment(e) {
+            e.preventDefault();
+            const name = document.getElementById('m-e-name').value;
+            const category = document.getElementById('m-e-cat').value;
+            const type = document.getElementById('m-e-type').value || category;
+            const qty = parseInt(document.getElementById('m-e-qty').value) || 1;
+
+            appState.equipment.unshift({
+                id: 'e_' + Date.now(),
+                name, category, type, qty
+            });
+
+            saveState();
+            closeModal();
+            renderView();
+            showToast('Tool added!');
+        }
+
+        function saveNewThread(e) {
+            e.preventDefault();
+            const brand = document.getElementById('m-t-brand').value;
+            const code = document.getElementById('m-t-code').value;
+            const name = document.getElementById('m-t-name').value;
+            const hex = document.getElementById('m-t-hex').value;
+            const qty = parseInt(document.getElementById('m-t-qty').value);
+
+            appState.threads.unshift({
+                id: 't_' + Date.now(),
+                brand, code, name, hex, qty, wishlist: false
+            });
+
+            saveState();
+            closeModal();
+            renderView();
+            showToast('Thread added!');
+        }
+
+        function updateProjectProgress(id, val) {
+            const p = appState.projects.find(proj => proj.id === id);
+            if (p) {
+                p.progress = parseInt(val);
+                if (p.progress === 100) p.status = 'Completed';
+                else if (p.progress > 0 && p.status === 'Planned') p.status = 'In Progress';
+
+                document.getElementById('p-modal-val').textContent = `${p.progress}%`;
+                saveState();
+                renderView();
+            }
+        }
+
+        function deleteProject(id) {
+            appState.projects = appState.projects.filter(p => p.id !== id);
+            saveState();
+            closeModal();
+            renderView();
+            showToast('Project deleted');
+        }
+
+        window.onload = function() {
+            initTheme();
+            renderView();
+        }
+    </script>
+</body>
+</html>
